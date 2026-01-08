@@ -26,12 +26,13 @@ and hook into **ChatGPT via GPT Actions** (schema = `/openapi.json`).
    - `STRIPE_WEBHOOK_SECRET` (optional unless you configure Stripe webhooks)
    - `MOTHERDUCK_TOKEN` (optional; if missing, uses local DuckDB)
    - `MOTHERDUCK_DATABASE` (optional; default `acp_demo`)
-4. Deploy. After boot, note your base URL, e.g.: `https://acp-merchant.onrender.com`
+   - `PUBLIC_BASE_URL` (your Render service URL, e.g. `https://agentic-commerce-protocol-demo.onrender.com` - required for OpenAPI schema and product links)
+4. Deploy. After boot, note your base URL, e.g.: `https://agentic-commerce-protocol-demo.onrender.com`
 
 ## Connect to ChatGPT via GPT Actions
 1. In ChatGPT → *Explore GPTs* → *Create* → *Actions* → *Add action*.
 2. **Schema URL**: paste your Render URL + `/openapi.json`, e.g.  
-   `https://acp-merchant.onrender.com/openapi.json`
+   `https://agentic-commerce-protocol-demo.onrender.com/openapi.json`
 3. **Auth**: select **API Key** and set header **`X-API-Key`** to your `API_KEY` value.
 4. Save the GPT (private or workspace).
 

@@ -39,7 +39,17 @@ async def list_products(
         if not table_has(conn, "products", c):
             raise HTTPException(status_code=500, detail=f"products table missing required column '{c}'")
 
-    base = os.getenv("PUBLIC_BASE_URL", "https://acp-merchant.onrender.com")
+    # Usa PUBLIC_BASE_URL se configurato, altrimenti rileva automaticamente dalla request
+    base = os.getenv("PUBLIC_BASE_URL", "").strip()
+    if not base:
+        # Fallback: costruisci URL dalla request
+        scheme = request.url.scheme
+        host = request.url.hostname
+        port = request.url.port
+        if port and port not in (80, 443):
+            base = f"{scheme}://{host}:{port}"
+        else:
+            base = f"{scheme}://{host}"
 
     where, params = [], []
     if category:

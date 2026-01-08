@@ -17,3 +17,5 @@ services:
         sync: false
       - key: MOTHERDUCK_DATABASE
         value: acp_demo
+      - key: PUBLIC_BASE_URL
+        value: https://agentic-commerce-protocol-demo.onrender.com
