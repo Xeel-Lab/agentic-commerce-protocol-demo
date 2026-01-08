@@ -1,8 +1,15 @@
 # app/main.py
 import os
+import re
+import logging
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+from starlette.responses import Response
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
+
+logger = logging.getLogger("acp.main")
 
 from .routes.products import router as products_router
 from .routes.checkout import router as checkout_router
@@ -14,6 +21,26 @@ app = FastAPI(
     version="0.3.0",
     description="ACP-like checkout API for GPT Actions demos. Public OpenAPI at /openapi.json",
 )
+
+# Middleware per normalizzare path con doppi slash (es. //products -> /products)
+class NormalizePathMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        # Normalizza doppi slash nel path
+        path = request.url.path
+        # Sostituisci sequenze di slash multiple con un singolo slash
+        normalized_path = re.sub(r'/+', '/', path)
+        # Se il path è cambiato, modifica lo scope e ricrea la request
+        if normalized_path != path:
+            logger.info(f"Normalizing path: {path} -> {normalized_path}")
+            # Crea un nuovo scope con il path normalizzato
+            scope = dict(request.scope)
+            scope["path"] = normalized_path
+            # Ricrea la request con il nuovo scope
+            request = Request(scope, request.receive)
+        response = await call_next(request)
+        return response
+
+app.add_middleware(NormalizePathMiddleware)
 
 # CORS: per demo lasciamo tutto aperto (stringi in produzione)
 app.add_middleware(
