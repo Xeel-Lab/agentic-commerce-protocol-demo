@@ -42,6 +42,8 @@ def custom_openapi():
     # ✅ 1) Inserisci il server dinamico da ENV (deve essere https)
     base = os.getenv("PUBLIC_BASE_URL", "").strip()
     if base and base.startswith("https://"):
+        # Rimuovi trailing slash per evitare doppi slash nello schema OpenAPI
+        base = base.rstrip('/')
         schema["servers"] = [{"url": base}]
     else:
         # fallback placeholder (verrà rifiutato dalle Actions se usato)

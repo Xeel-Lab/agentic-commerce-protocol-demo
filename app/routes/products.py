@@ -1,5 +1,6 @@
 from typing import List
 from fastapi import APIRouter, HTTPException, Query
+from pydantic import ValidationError
 from ..db import get_conn
 from ..models import Product
 from fastapi.responses import JSONResponse
@@ -50,6 +51,8 @@ async def list_products(
             base = f"{scheme}://{host}:{port}"
         else:
             base = f"{scheme}://{host}"
+    # Rimuovi trailing slash per evitare doppi slash quando si costruiscono i path
+    base = base.rstrip('/')
 
     where, params = [], []
     if category:
