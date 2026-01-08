@@ -85,8 +85,9 @@ async def list_products(
             price,
             upper(COALESCE(currency, 'EUR')) AS currency_safe,
             CASE
-              WHEN image_url IS NOT NULL
-                   AND regexp_matches(image_url, '^(http|https)://') THEN image_url
+              WHEN image_url IS NOT NULL 
+                   AND image_url != ''
+                   AND image_url LIKE 'http%' THEN image_url
               ELSE NULL
             END AS image_url_safe,
             size,
@@ -99,6 +100,10 @@ async def list_products(
     """
     params += [int(limit), int(offset)]
     rows = conn.execute(query, params).fetchall()
+
+    # Debug temporaneo per verificare image_url
+    if rows:
+        logger.info(f"Sample image_url from first product: {rows[0][8] if len(rows[0]) > 8 else 'N/A'}")
 
     items: List[Product] = []
     skipped = 0
